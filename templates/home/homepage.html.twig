@@ -1,0 +1,44 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}SmartWorkout{% endblock %}
+
+{% block stylesheets %}
+    <style>
+        .homepage {
+            background: linear-gradient(to right, #000000, darkgrey);
+            /*background: black;*/
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: #fff;
+            margin-top: 0px;
+            padding-top: 0px;
+        }
+
+        .homepage h1 {
+            font-size: 48px;
+            font-weight: bold;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="homepage">
+        <h1>SmartWorkout</h1>
+
+
+    </div>
+
+    <script>
+        document.getElementById('add-exercise-btn').addEventListener('click', function() {
+            var form = document.getElementById('exercise-form');
+            if (form.style.display === 'none' || form.style.display === '') {
+                form.style.display = 'block';
+            } else {
+                form.style.display = 'none';
+            }
+        });
+    </script>
+{% endblock %}

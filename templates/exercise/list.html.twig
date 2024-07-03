@@ -1,0 +1,144 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Lista Exercitiilor{% endblock %}
+
+{% block stylesheets %}
+    <style>
+        body {
+            background: black;
+            color: white;
+        }
+
+        .border-custom {
+
+            border-radius: 10px;
+
+            /*background-color: rgba(128,128,128,20%);*/
+            background: linear-gradient(to top, black, rgba(128,128,128,90%));
+
+
+            padding: 20px;
+            position: relative;
+        }
+
+        .card-custom {
+            background: linear-gradient(to left, #000000, #ffcc00);
+
+            border-radius: 10px;
+            border: 1px solid #e6b800;
+            color: #ffffff;
+        }
+
+        .card-custom .card-body {
+            padding: 20px;
+        }
+
+        .card-custom .card-title {
+            font-weight: bold;
+            font-size: 1.25rem;
+            margin-bottom: 10px;
+            color: black;
+            text-align: center;
+        }
+
+        .card-custom .card-text {
+            color: black;
+        }
+
+        .btn-watch-video {
+            background-color: #ffcc00;
+            color: #000000;
+            border: none;
+        }
+
+        .btn-watch-video:hover {
+            background-color: #e6b800;
+            color: #000000;
+            border: none;
+        }
+
+        .btn-remove {
+            background-color: #000000;
+            color: #ffffff;
+            border: none;
+        }
+
+        .btn-remove:hover {
+            background-color: #1a1a1a;
+            color: #ffffff;
+            border: none;
+        }
+
+        #add-exercise-btn,#save-btn{
+            background: black;
+            color: white;
+            border: 1px solid #e6b800;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="container mt-5">
+        <h1 class="mb-4 text-center">Lista Exercitiilor</h1>
+        <div class="border-custom">
+            <button class="btn btn-primary mb-3" id="add-exercise-btn">Adaugă exercițiu</button>
+
+            <div id="exercise-form" class="mb-4" style="display: none;">
+                {{ form_start(form) }}
+                <div class="mb-3">
+                    {{ form_label(form.nume) }}
+                    {{ form_widget(form.nume, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_errors(form.nume) }}
+                </div>
+                <div class="mb-3">
+                    {{ form_label(form.linkVideo) }}
+                    {{ form_widget(form.linkVideo, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_errors(form.linkVideo) }}
+                </div>
+                <div class="mb-3">
+                    {{ form_label(form.tip) }}
+                    {{ form_widget(form.tip, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_errors(form.tip) }}
+                </div>
+                <button type="submit" class="btn btn-primary" id="save-btn">Save</button>
+                {{ form_end(form) }}
+            </div>
+
+            <div class="row mt-3">
+                {% for exercise in exercises %}
+                    <div class="col-md-4 mb-4">
+                        <div class="card card-custom">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ exercise.nume }}</h5>
+                                <p class="card-text"><strong>ID:</strong> {{ exercise.id }}</p>
+                                <p class="card-text"><strong>Type:</strong> {{ exercise.tip }}</p>
+                                <a href="{{ exercise.linkVideo }}" class="btn btn-watch-video" target="_blank">Watch Video</a>
+
+
+                                <form action="{{ path('remove_exercise', {'id': exercise.id}) }}" method="POST" class="mt-2">
+                                    <button href="{{ path('remove_exercise', {'id': exercise.id}) }}" class="btn btn-remove" id="remove-btn">Remove</button>
+                                    <input type="hidden" name="_method" value="DELETE">
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('add-exercise-btn').addEventListener('click', function() {
+            var form = document.getElementById('exercise-form');
+            if (form.style.display === 'none' || form.style.display === '') {
+                form.style.display = 'block';
+            } else {
+                form.style.display = 'none';
+            }
+        });
+
+        // document.getElementById('add-exercise-btn').addEventListener('click',function (){
+        //
+        // })
+    </script>
+{% endblock %}

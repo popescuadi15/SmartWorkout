@@ -23,20 +23,24 @@ class ExerciseController extends AbstractController
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $exercise = $form->getData();
-
-
             $entityManager->persist($exercise);
             $entityManager->flush();
 
             return $this->redirectToRoute('exercise_list');
         }
 
+        $updateForms = [];
+        foreach ($exercises as $exerciseItem) {
+            $updateForms[$exerciseItem->getId()] = $this->createForm(ExerciseType::class, $exerciseItem)->createView();
+        }
+
         return $this->render('exercise/list.html.twig', [
             'exercises' => $exercises,
             'form' => $form->createView(),
+            'updateForms' => $updateForms,
         ]);
     }
+
 
     #[Route("/add-exercise", name: "add_exercise")]
     public function addExercise(Request $request, EntityManagerInterface $entityManager): Response
@@ -68,5 +72,26 @@ class ExerciseController extends AbstractController
         $this->addFlash('success', 'Exercitiul a fost sters cu succes!');
 
         return $this->redirectToRoute('exercise_list');
+    }
+
+    #[Route("/update-exercise/{id}", name: "update_exercise", methods: ["PATCH", "GET", "POST"])]
+    public function updateExercise(Request $request, Exercise $exercise, EntityManagerInterface $entityManager): Response
+    {
+        $form = $this->createForm(ExerciseType::class, $exercise);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Exercitiul a fost actualizat cu succes!');
+
+            return $this->redirectToRoute('exercise_list');
+        }
+
+        return $this->render('exercise/updateExercisePage.html.twig', [
+            'form' => $form->createView(),
+            'exercise' => $exercise,
+        ]);
     }
 }

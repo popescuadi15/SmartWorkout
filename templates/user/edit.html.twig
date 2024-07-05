@@ -1,0 +1,78 @@
+
+    <style>
+        .update-form-container {
+            background-color: #f0f0f0;
+            border: 1px solid #e6b800;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+        }
+
+        .update-form-container .form-group {
+            margin-bottom: 20px;
+        }
+
+        .update-form-container label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .update-form-container input[type="text"],
+        .update-form-container input[type="url"],
+        .update-form-container input[type="email"],
+        .update-form-container select,
+        .update-form-container .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .update-form-container .btn-primary {
+            background-color: #ffcc00;
+            color: #000000;
+            border: none;
+            padding: 10px 20px;
+            margin-top: 10px;
+        }
+
+        .update-form-container .btn-primary:hover {
+            background-color: #e6b800;
+            color: #000000;
+            border: none;
+        }
+    </style>
+
+    <div class="container mt-5">
+        <h1 class="mb-4">Update User</h1>
+        <div class="update-form-container">
+            {{ form_start(form) }}
+            <div class="form-group">
+                {{ form_label(form.nume) }}
+                {{ form_widget(form.nume, {'attr': {'class': 'form-control'}}) }}
+                {{ form_errors(form.nume) }}
+            </div>
+            <div class="form-group">
+                {{ form_label(form.mail) }}
+                {{ form_widget(form.mail, {'attr': {'class': 'form-control'}}) }}
+                {{ form_errors(form.mail) }}
+            </div>
+            <div class="form-group">
+                {{ form_label(form.birth_day) }}
+                {{ form_widget(form.birth_day, {'attr': {'class': 'form-control'}}) }}
+                {{ form_errors(form.birth_day) }}
+            </div>
+            <div class="form-group">
+                {{ form_label(form.gender) }}
+                {{ form_widget(form.gender, {'attr': {'class': 'form-control'}}) }}
+                {{ form_errors(form.gender) }}
+            </div>
+            <button type="submit" class="btn btn-primary">Update</button>
+            {{ form_end(form) }}
+        </div>
+    </div>
+

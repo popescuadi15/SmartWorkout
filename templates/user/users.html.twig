@@ -1,57 +1,144 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}User List{% endblock %}
+{% block title %}Lista Utilizatorilor{% endblock %}
 
 {% block stylesheets %}
+    {{ parent() }}
     <style>
-        body, html {
-            height: 100%;
-            margin: 0;
-        }
-
         body {
-            background: linear-gradient(to bottom, black, grey);
+            background: black;
             color: white;
-            display: flex;
-            flex-direction: column;
-            min-height: 100%;
         }
 
-        .container {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
+        .border-custom {
+            border-radius: 10px;
+            background: linear-gradient(to top, black, rgba(128, 128, 128, 90%));
+            padding: 20px;
+            position: relative;
         }
 
+        .card-custom {
+            background: linear-gradient(to left, #000000, #ffcc00);
+            border-radius: 10px;
+            border: 1px solid #e6b800;
+            color: #ffffff;
+        }
 
+        .card-custom .card-body {
+            padding: 20px;
+        }
+
+        .card-custom .card-title {
+            font-weight: bold;
+            font-size: 1.25rem;
+            margin-bottom: 10px;
+            color: black;
+            text-align: center;
+        }
+
+        .card-custom .card-text {
+            color: black;
+        }
+
+        .btn-update {
+            background-color: white;
+            color: #000000;
+            border: none;
+            width: 50%;
+            margin: 0 auto;
+            display: block;
+        }
+
+        .update-form {
+            background: rgba(85, 85, 85, 0.7);
+        }
     </style>
 {% endblock %}
 
 {% block body %}
     <div class="container mt-5">
-        <h1 class="mb-4 text-center">User List</h1>
-        <table class="table table-striped table-bordered table-dark table-hover">
-            <thead>
-            <tr>
-                <th>ID</th>
-                <th>Nume</th>
-                <th>Email</th>
-                <th>Data Nașterii</th>
-                <th>Sex</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for user in users %}
-                <tr>
-                    <td>{{ user.id }}</td>
-                    <td>{{ user.nume }}</td>
-                    <td>{{ user.mail }}</td>
-                    <td>{{ user.birthDay ? user.birthDay|date('d-m-Y') : 'N/A' }}</td>
-                    <td>{{ user.gender == 0 ? 'Masculin' : user.gender == 1 ? 'Feminin' : user.gender == 2 ? 'Other' : 'Prefer not to say' }}</td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
+        <h1 class="mb-4 text-center">Lista Utilizatorilor</h1>
+        <div class="border-custom">
+
+
+            <div id="user-form" class="mb-4" style="display: none;">
+                {{ form_start(form) }}
+                <div class="mb-3">
+                    {{ form_label(form.nume) }}
+                    {{ form_widget(form.nume, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_errors(form.nume) }}
+                </div>
+                <div class="mb-3">
+                    {{ form_label(form.mail) }}
+                    {{ form_widget(form.mail, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_errors(form.mail) }}
+                </div>
+                <div class="mb-3">
+                    {{ form_label(form.birth_day) }}
+                    {{ form_widget(form.birth_day, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_errors(form.birth_day) }}
+                </div>
+                <div class="mb-3">
+                    {{ form_label(form.gender) }}
+                    {{ form_widget(form.gender, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_errors(form.gender) }}
+                </div>
+                <button type="submit" class="btn btn-primary" id="save-btn">Salvează</button>
+                {{ form_end(form) }}
+            </div>
+
+            <div class="row mt-3">
+                {% for user in users %}
+                    <div class="col-md-4 mb-4">
+                        <div class="card card-custom">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ user.nume }}</h5>
+                                <p class="card-text"><strong>ID:</strong> {{ user.id }}</p>
+                                <p class="card-text"><strong>Email:</strong> {{ user.mail }}</p>
+                                <p class="card-text"><strong>Data nașterii:</strong> {{ user.birthDay ? user.birthDay|date('d-m-Y') : 'N/A' }}</p>
+                                <p class="card-text"><strong>Gen:</strong>
+                                    {% if user.gender == 0 %}
+                                        Masculin
+                                    {% elseif user.gender == 1 %}
+                                        Feminin
+                                    {% elseif user.gender == 2 %}
+                                        Other
+                                    {% else %}
+                                        Prefer not to say
+                                    {% endif %}
+                                </p>
+
+                                <form action="{{ path('remove_user', {'id': user.id}) }}" method="POST" class="mt-2 text-center">
+                                    <button class="btn btn-danger" id="remove-btn">Șterge</button>
+                                    <input type="hidden" name="_method" value="DELETE">
+                                </form>
+
+                                <button class="btn btn-update mt-2" onclick="toggleUpdateForm({{ user.id }})">Actualizează</button>
+
+                                <div id="update-form-{{ user.id }}" class="list-update-form-container update-form" style="display: none;">
+{#                                    {{ form_start(updateForms[user.id], {'action': path('update_user', {'id': user.id}), 'method': 'POST'}) }}#}
+{#                                    {{ form_widget(updateForms[user.id]) }}#}
+{#                                    <button type="submit" class="btn btn-primary mt-2" id="save-btn">Salvează</button>#}
+{#                                    {{ form_end(updateForms[user.id]) }}#}
+                                    {{ include('user/edit.html.twig', {form: updateForms[user.id]}, with_context = false) }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
     </div>
+
+    <script>
+        function toggleUpdateForm(userId) {
+            var form = document.getElementById('update-form-' + userId);
+            if (form.style.display === 'none' || form.style.display === '') {
+                form.style.display = 'block';
+            } else {
+                form.style.display = 'none';
+            }
+        }
+
+    </script>
 {% endblock %}

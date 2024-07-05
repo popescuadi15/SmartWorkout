@@ -2,11 +2,8 @@
 
 namespace App\Controller;
 
-use App\Entity\Exercise;
 use App\Entity\User;
-use App\Form\Type\ExerciseType;
-use App\Form\Type\UserType;
-use App\Repository\ExerciseRepository;
+use App\Form\Type\UserEditType;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -17,37 +14,61 @@ use Symfony\Component\Routing\Annotation\Route;
 class UserController extends AbstractController
 {
     #[Route('/users', name: 'user_list')]
-    public function list(EntityManagerInterface $em): Response
+    public function list(Request $request, EntityManagerInterface $entityManager, UserRepository $userRepository): Response
     {
-        $users = $em->getRepository(User::class)->findAll();
-
-        return $this->render('user/users.html.twig', [
-            'users' => $users,
-        ]);
-    }
-
-    #[Route("/sign-up", name: "sign_up")]
-    public function new(Request $request, EntityManagerInterface $entityManager, UserRepository $userRepository): Response
-    {
-
+        $users = $userRepository->findBy([], ['id' => 'DESC']);
 
         $user = new User();
-        $form = $this->createForm(UserType::class, $user);
+        $form = $this->createForm(UserEditType::class, $user);
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $user = $form->getData();
-
-
             $entityManager->persist($user);
             $entityManager->flush();
 
-            return $this->redirectToRoute('sign_up');
+            return $this->redirectToRoute('user_list');
         }
 
-        return $this->render('auth/signup.html.twig', [
-            'user' => $user,
+        $updateForms = [];
+        foreach ($users as $userItem) {
+            $updateForms[$userItem->getId()] = $this->createForm(UserEditType::class, $userItem)->createView();
+        }
+
+        return $this->render('user/users.html.twig', [
+            'users' => $users,
             'form' => $form->createView(),
+            'updateForms' => $updateForms,
+        ]);
+    }
+
+    #[Route('/remove-user/{id}', name: 'remove_user', methods: ['POST'])]
+    public function removeUser(User $user, EntityManagerInterface $entityManager): Response
+    {
+        $entityManager->remove($user);
+        $entityManager->flush();
+
+        $this->addFlash('success', 'Utilizatorul a fost șters cu succes!');
+
+        return $this->redirectToRoute('user_list');
+    }
+
+    #[Route('/update-user/{id}', name: 'update_user', methods: ['PATCH', 'GET', 'POST'])]
+    public function updateUser(Request $request, User $user, EntityManagerInterface $entityManager): Response
+    {
+        $form = $this->createForm(UserEditType::class, $user);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Utilizatorul a fost actualizat cu succes!');
+
+            return $this->redirectToRoute('user_list');
+        }
+
+        return $this->render('user/edit.html.twig', [
+            'form' => $form->createView(),
+            'user' => $user,
         ]);
     }
 }

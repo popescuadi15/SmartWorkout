@@ -2,37 +2,55 @@
 
 {% block stylesheets %}
     <style>
+
+
         .container-custom {
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
             flex-direction: column;
             text-align: center;
-        }
-
-        .btn-custom {
-            width: 200px;
-            margin-bottom: 20px;
+            background: linear-gradient(to top, black, rgba(128, 128, 128, 90%));
+            padding: 0 20px;
         }
 
         .form-container {
-            width: 50%;
-            display: none;
+            width: 100%;
+            max-width: 400px;
+            background-color: rgba(240, 240, 240, 0.71);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
         }
 
-        #add-signup-btn{
-            background: linear-gradient(to left, #000000, #ffcc00);
-            color: white;
+        .form-container h2 {
+            margin-bottom: 20px;
         }
+
+        .form-container p {
+            margin-top: 20px;
+        }
+
+        #login-link {
+            color: #000000;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
+        #login-link:hover {
+            color: #1a1a1a;
+        }
+
+
     </style>
 {% endblock %}
 
 {% block body %}
     <div class="container-custom">
-        <button class="btn btn-primary btn-custom" id="add-signup-btn">Adaugă User</button>
-
-        <div id="user-form" class="form-container">
+        <div class="form-container">
+            <h2>Sign Up</h2>
             {{ form_start(form) }}
             <div class="mb-3">
                 {{ form_label(form.nume) }}
@@ -59,19 +77,11 @@
                 {{ form_widget(form.gender, {'attr': {'class': 'form-control'}}) }}
                 {{ form_errors(form.gender) }}
             </div>
-{#            <button type="submit" class="btn btn-primary btn-custom" id="add-signup-btn"></button>#}
+
             {{ form_end(form) }}
+            <p>Already have an account? <a id="login-link" href={{ path("app_login") }} >Sign In</a></p>
         </div>
     </div>
 
-    <script>
-        document.getElementById('add-signup-btn').addEventListener('click', function() {
-            var form = document.getElementById('user-form');
-            if (form.style.display === 'none' || form.style.display === '') {
-                form.style.display = 'block';
-            } else {
-                form.style.display = 'none';
-            }
-        });
-    </script>
+
 {% endblock %}

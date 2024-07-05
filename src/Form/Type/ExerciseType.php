@@ -25,13 +25,9 @@ class ExerciseType extends AbstractType
             ->add('tip', EntityType::class, [
                 'class' => Tip::class,
                 'choice_label' => 'nume',
-                'placeholder' => 'Selectează un tip',
+                'placeholder' => 'Select a type',
                 'label' => 'Tip',
             ]);
-//            ->add('remove_exercise', SubmitType::class, [
-//                'label' => 'Remove',
-//                'attr' => ['class' => 'btn btn-remove', 'id' => 'btn-remove-exercise'],
-//            ]);
 
     }
 
